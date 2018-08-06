@@ -1,0 +1,35 @@
+---
+- hosts: webserver
+  tasks:
+    - name: Install Apache, nginx and nmap software
+      package: name={{ item }} state=present
+      with_items:
+        - apache2
+        - nginx
+        - nmap
+
+    - name: Copy the index.html file
+      copy: src=./index.html dest=/var/www/html/
+      register: copy_stat
+
+    - name: Ensure the service is started
+      service: name=apache2 state=started
+
+    - name: Template to create a new html file
+      template: src=current.html.j2 dest=/var/www/html/current.html
+      notify: restart apache
+
+    - name: Testing Conditional
+      shell: uptime
+      when: ansible_hostname == 'ubuntunode'
+
+    - name: Testing until
+      shell: service apache2 status
+      register: result
+      until: result.stdout.find ("active (running)") != -1
+      retries: 5
+      delay: 3
+
+  handlers:
+    - name: restart apache
+      service: name=apache2 state=restarted

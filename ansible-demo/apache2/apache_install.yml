@@ -1,11 +1,16 @@
 ---
 - hosts: webserver
   tasks:
-    - name: Install Apache software
-      package: name=apache2 state=present
+    - name: Install Apache, nginx and nmap software
+      package: name={{ item }} state=present
+      with_items:
+        - apache2
+        - nginx
+        - nmap
 
     - name: Copy the index.html file
       copy: src=./index.html dest=/var/www/html/
+      register: copy_stat
 
     - name: Ensure the service is started
       service: name=apache2 state=started
@@ -13,6 +18,9 @@
     - name: Template to create a new html file
       template: src=current.html.j2 dest=/var/www/html/current.html
       notify: restart apache
+
+    - name: copy status
+      debug: var=copy_stat
 
   handlers:
     - name: restart apache
