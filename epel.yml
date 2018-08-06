@@ -1,0 +1,6 @@
+---
+- hosts: centos
+  tasks:
+    - name: Installing package epel
+      package: name=epel-release state=present
+      become: true

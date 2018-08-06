@@ -1,0 +1,14 @@
+---
+- hosts: nodes
+  vars:
+    package1: nginx
+    package2: wget
+  tasks:
+    - name: Installing package nginx
+      package: name=nginx state=present
+      become: true
+    - name: Installing wget
+      package: name={{ package2 }} state=present
+      become: true
+    - name: Copying test file
+      copy: src=/tmp/test12 dest=/tmp/test123

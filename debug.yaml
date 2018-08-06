@@ -1,0 +1,9 @@
+---
+- hosts: nodes
+  tasks:
+    - name: Check uptime
+      shell: uptime
+      register: uptime_var
+
+    - name: print uptime
+      debug: var=uptime_var
